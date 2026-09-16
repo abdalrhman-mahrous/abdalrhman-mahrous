@@ -1,0 +1,59 @@
+{{ 'custom-test.css' | asset_url | stylesheet_tag }}
+
+<section class="custom-banner-section" style="background-image: url('{{ section.settings.background_image | img_url: 'master' }}');">
+  <div class="custom-banner-container">
+    <h1 class="custom-banner-heading">{{ section.settings.heading_text }}</h1>
+    
+    <div class="custom-banner-description">
+      {{ section.settings.description_text }}
+    </div>
+
+    <a href="{{ section.settings.button_link }}" class="custom-banner-btn">
+      <span class="btn-text">{{ section.settings.button_text }}</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "richtext",
+      "id": "description_text",
+      "label": "Description",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gift to delight your loved ones this holiday season.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
+{% endschema %}

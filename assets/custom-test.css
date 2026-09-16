@@ -1,0 +1,68 @@
+/* --- CUSTOM BANNER STYLES --- */
+.custom-banner-section {
+  width: 100%;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  padding: 40px 5%;
+  border-bottom: 2px dotted #5bc0de; /* Matches the blue dotted line in design */
+  border-top: 2px dotted #5bc0de;
+}
+
+.custom-banner-container {
+  max-width: 600px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Slight background to make text readable */
+  padding: 40px;
+}
+
+.custom-banner-heading {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.custom-banner-description {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Button & Animation (Pixel Perfect to Figma) */
+.custom-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  color: #fff;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.custom-banner-btn .btn-arrow {
+  margin-left: 15px;
+  transition: transform 0.3s ease;
+}
+
+/* Hover State */
+.custom-banner-btn:hover {
+  background-color: #f7e835; /* Yellow from design */
+  color: #000;
+}
+
+.custom-banner-btn:hover .btn-arrow {
+  transform: translateX(5px);
+}
