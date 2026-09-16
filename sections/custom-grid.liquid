@@ -1,0 +1,92 @@
+<section class="custom-grid-section">
+  <div class="custom-grid-header">
+    <h2>Tisso vison in the wild</h2>
+  </div>
+  
+  <div class="custom-grid-container">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'product' -%}
+        {%- assign product = block.settings.product -%}
+        
+        {%- if product != blank -%}
+          <div class="custom-grid-item" {{ block.shopify_attributes }}>
+            <!-- The entire wrapper is now the clickable button -->
+            <div class="image-wrapper open-modal-btn" data-product-handle="{{ product.handle }}" role="button" tabindex="0" aria-label="Quick add {{ product.title }}">
+              
+              <img src="{{ product.featured_image | img_url: '600x600', crop: 'center' }}" alt="{{ product.title }}">
+              
+              <!-- The visual '+' icon from the design -->
+              <div class="plus-icon-indicator">+</div>
+              
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 6,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Grid"
+    }
+  ]
+}
+{% endschema %}
+
+<!-- --- CUSTOM MODAL POPUP --- -->
+<div id="custom-product-modal" class="custom-modal-overlay" style="display: none;">
+  <div class="custom-modal-content">
+    <button class="custom-modal-close" aria-label="Close">&times;</button>
+    
+    <div class="custom-modal-body">
+      <div class="custom-modal-image">
+        <img id="modal-product-image" src="" alt="Product Image">
+      </div>
+      
+      <div class="custom-modal-details">
+        <h3 id="modal-product-title"></h3>
+        <p id="modal-product-price"></p>
+        <div id="modal-product-description"></div>
+        
+        <form id="modal-add-to-cart-form">
+          <!-- Dynamic variant selectors will be injected here by JS -->
+          <div id="modal-product-variants"></div>
+          
+          <!-- Hidden input to store the final selected variant ID -->
+          <input type="hidden" name="id" id="modal-variant-id" value="">
+          
+          <button type="submit" id="modal-add-to-cart-btn" class="custom-banner-btn" style="width: 100%; margin-top: 20px;">
+            <span class="btn-text">ADD TO CART</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          
+          <p id="modal-cart-message" style="display:none; margin-top: 15px; font-weight: bold;"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Load our custom script -->
+<script src="{{ 'custom-scripts.js' | asset_url }}" defer></script>
