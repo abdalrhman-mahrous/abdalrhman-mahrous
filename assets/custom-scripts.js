@@ -1,20 +1,11 @@
-/**
- * Ecomexperts Hiring Test - Custom Javascript
- * Handles dynamic modal rendering, variant selection, and custom Cart API logic.
- * Written in strict vanilla JavaScript (No jQuery).
- */
-
 document.addEventListener("DOMContentLoaded", () => {
-  // --- State Management ---
-  let currentProductData = null; // Stores the currently viewed product's JSON data
+  let currentProductData = null;
 
-  // --- DOM Elements ---
   const modal = document.getElementById("custom-product-modal");
   const closeModalBtn = document.querySelector(".custom-modal-close");
   const triggerBtns = document.querySelectorAll(".open-modal-btn");
   const form = document.getElementById("modal-add-to-cart-form");
 
-  // Modal Content Elements
   const elements = {
     image: document.getElementById("modal-product-image"),
     title: document.getElementById("modal-product-title"),
@@ -22,16 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
     description: document.getElementById("modal-product-description"),
     variantsContainer: document.getElementById("modal-product-variants"),
     hiddenVariantId: document.getElementById("modal-variant-id"),
-    message: document.getElementById("modal-cart-message"),
     submitBtn: document.getElementById("modal-add-to-cart-btn"),
   };
 
-  // --- Event Listeners ---
   triggerBtns.forEach((btn) => {
     btn.addEventListener("click", async function () {
       const handle = this.getAttribute("data-product-handle");
       if (!handle) return;
-
       await fetchAndPopulateProduct(handle);
       openModal();
     });
@@ -39,36 +27,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   closeModalBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal(); // Close if user clicks the dark overlay
+    if (e.target === modal) closeModal();
   });
 
   form.addEventListener("submit", handleAddToCart);
 
-  // --- Core Functions ---
-
-  /**
-   * Fetches product data via Shopify's AJAX API and populates the modal UI.
-   * @param {string} handle - The Shopify product handle
-   */
   async function fetchAndPopulateProduct(handle) {
     try {
-      // Reset message state
-      elements.message.style.display = "none";
-
-      // Fetch product JSON
       const response = await fetch(`/products/${handle}.js`);
       if (!response.ok) throw new Error("Failed to fetch product");
       const product = await response.json();
 
-      currentProductData = product; // Cache for variant matching
+      currentProductData = product;
 
-      // Populate text and image
       elements.title.textContent = product.title;
       elements.description.innerHTML = product.description;
       elements.image.src = product.images.length > 0 ? product.images[0] : "";
-      elements.image.alt = product.title;
-
-      // Shopify returns prices in cents, divide by 100 for display
       elements.price.textContent = (product.price / 100).toFixed(2) + "€";
 
       buildVariantSelectors(product);
@@ -77,14 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Dynamically generates <select> dropdowns based on product options.
-   * @param {Object} product - The Shopify product object
-   */
   function buildVariantSelectors(product) {
-    elements.variantsContainer.innerHTML = ""; // Clear existing
+    elements.variantsContainer.innerHTML = "";
 
-    // Check if product actually has variants (not just default 'Title')
     if (product.options && product.options[0].name !== "Title") {
       product.options.forEach((option, index) => {
         const groupDiv = document.createElement("div");
@@ -94,38 +63,73 @@ document.addEventListener("DOMContentLoaded", () => {
         label.textContent = option.name;
         groupDiv.appendChild(label);
 
-        const select = document.createElement("select");
-        select.className = "custom-variant-select";
+        // --- CUSTOM UI FOR COLOR ---
+        if (option.name.toLowerCase() === "color") {
+          const swatchContainer = document.createElement("div");
+          swatchContainer.className = "color-swatches";
+          swatchContainer.dataset.index = index;
 
-        option.values.forEach((value) => {
-          const optionEl = document.createElement("option");
-          optionEl.value = value;
-          optionEl.textContent = value;
-          select.appendChild(optionEl);
-        });
+          option.values.forEach((value, vIdx) => {
+            const swatch = document.createElement("div");
+            // First item is active by default
+            swatch.className = "color-swatch" + (vIdx === 0 ? " active" : "");
+            swatch.textContent = value;
+            swatch.dataset.value = value;
 
-        // Listen for changes to update price and hidden ID
-        select.addEventListener("change", updateSelectedVariant);
-        groupDiv.appendChild(select);
+            swatch.addEventListener("click", function () {
+              // Remove active class from siblings, add to clicked
+              Array.from(swatchContainer.children).forEach((c) =>
+                c.classList.remove("active"),
+              );
+              this.classList.add("active");
+              updateSelectedVariant();
+            });
+            swatchContainer.appendChild(swatch);
+          });
+          groupDiv.appendChild(swatchContainer);
+        }
+        // --- DEFAULT UI FOR SIZE/OTHER ---
+        else {
+          const select = document.createElement("select");
+          select.className = "custom-variant-select";
+          select.dataset.index = index;
+
+          option.values.forEach((value) => {
+            const optionEl = document.createElement("option");
+            optionEl.value = value;
+            optionEl.textContent = value;
+            select.appendChild(optionEl);
+          });
+
+          select.addEventListener("change", updateSelectedVariant);
+          groupDiv.appendChild(select);
+        }
+
         elements.variantsContainer.appendChild(groupDiv);
       });
     }
-
-    updateSelectedVariant(); // Run once to set initial ID
+    updateSelectedVariant();
   }
 
-  /**
-   * Matches selected dropdown values against product variants to find the correct Variant ID.
-   */
   function updateSelectedVariant() {
     if (!currentProductData) return;
 
-    const selects = Array.from(
-      document.querySelectorAll(".custom-variant-select"),
-    );
-    const selectedValues = selects.map((select) => select.value);
+    const selectedValues = [];
 
-    // Find the variant where all option values match the user's selections
+    // Gather selected values from our custom UI
+    currentProductData.options.forEach((opt, idx) => {
+      if (opt.name.toLowerCase() === "color") {
+        const activeSwatch = document.querySelector(
+          `.color-swatches[data-index="${idx}"] .color-swatch.active`,
+        );
+        selectedValues[idx] = activeSwatch ? activeSwatch.dataset.value : "";
+      } else {
+        const select = document.querySelector(`select[data-index="${idx}"]`);
+        selectedValues[idx] = select ? select.value : "";
+      }
+    });
+
+    // Find matching variant ID
     const matchedVariant = currentProductData.variants.find((variant) => {
       const vOptions = [
         variant.option1,
@@ -142,9 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Intercepts form submission, evaluates the 'Black + Medium' rule, and sends to Cart API.
-   */
   async function handleAddToCart(e) {
     e.preventDefault();
 
@@ -154,36 +155,41 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.submitBtn.disabled = true;
     elements.submitBtn.querySelector(".btn-text").textContent = "ADDING...";
 
-    // 1. Check current selections for the special condition
-    const selects = Array.from(
-      document.querySelectorAll(".custom-variant-select"),
-    );
-    const selectedValues = selects.map((s) => s.value.toLowerCase());
+    // 1. Check current selections for the Black + Medium rule
+    let isBlack = false;
+    let isMedium = false;
 
-    const isBlack = selectedValues.includes("black");
-    const isMedium =
-      selectedValues.includes("m") || selectedValues.includes("medium");
+    currentProductData.options.forEach((opt, idx) => {
+      if (opt.name.toLowerCase() === "color") {
+        const activeSwatch = document.querySelector(
+          `.color-swatches[data-index="${idx}"] .color-swatch.active`,
+        );
+        if (
+          activeSwatch &&
+          activeSwatch.dataset.value.toLowerCase() === "black"
+        )
+          isBlack = true;
+      } else if (opt.name.toLowerCase() === "size") {
+        const select = document.querySelector(`select[data-index="${idx}"]`);
+        if (
+          select &&
+          (select.value.toLowerCase() === "m" ||
+            select.value.toLowerCase() === "medium")
+        )
+          isMedium = true;
+      }
+    });
 
-    // Create the payload array for the Cart API
-    let itemsToAdd = [
-      {
-        id: parseInt(variantId),
-        quantity: 1,
-      },
-    ];
+    let itemsToAdd = [{ id: parseInt(variantId), quantity: 1 }];
 
-    // 2. BONUS LOGIC: If Black & Medium, append the Soft Winter Jacket
+    // 2. Add Soft Winter Jacket if condition met
     if (isBlack && isMedium) {
       try {
-        // Fetch the jacket to dynamically get its first available Variant ID
         const jacketRes = await fetch(`/products/soft-winter-jacket.js`);
         if (jacketRes.ok) {
           const jacketData = await jacketRes.json();
           if (jacketData.variants && jacketData.variants.length > 0) {
-            itemsToAdd.push({
-              id: jacketData.variants[0].id,
-              quantity: 1,
-            });
+            itemsToAdd.push({ id: jacketData.variants[0].id, quantity: 1 });
           }
         }
       } catch (error) {
@@ -191,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 3. Post to Cart API
+    // 3. Post to Cart API and REDIRECT TO CART
     try {
       const response = await fetch(window.Shopify.routes.root + "cart/add.js", {
         method: "POST",
@@ -200,26 +206,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (response.ok) {
-        elements.message.textContent =
-          itemsToAdd.length > 1
-            ? "Success! Product AND Soft Winter Jacket added to cart."
-            : "Product added to cart successfully!";
-        elements.message.style.color = "green";
-        elements.message.style.display = "block";
+        // Redirect straight to the cart page so the user sees the update!
+        window.location.href = "/cart";
       } else {
         throw new Error("Failed to add to cart");
       }
     } catch (error) {
-      elements.message.textContent = "Error adding to cart.";
-      elements.message.style.color = "red";
-      elements.message.style.display = "block";
-    } finally {
+      console.error("Cart error", error);
       elements.submitBtn.disabled = false;
       elements.submitBtn.querySelector(".btn-text").textContent = "ADD TO CART";
     }
   }
 
-  // --- UI Helpers ---
   function openModal() {
     modal.style.display = "flex";
     setTimeout(() => modal.classList.add("active"), 10);

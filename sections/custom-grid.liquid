@@ -60,28 +60,27 @@
     <button class="custom-modal-close" aria-label="Close">&times;</button>
     
     <div class="custom-modal-body">
-      <div class="custom-modal-image">
+      <!-- Top Section: Image and Details Side-by-Side -->
+      <div class="custom-modal-header-content">
         <img id="modal-product-image" src="" alt="Product Image">
+        <div class="custom-modal-text">
+          <h3 id="modal-product-title"></h3>
+          <p id="modal-product-price"></p>
+          <div id="modal-product-description"></div>
+        </div>
       </div>
       
-      <div class="custom-modal-details">
-        <h3 id="modal-product-title"></h3>
-        <p id="modal-product-price"></p>
-        <div id="modal-product-description"></div>
-        
+      <!-- Bottom Section: Selectors and Button -->
+      <div class="custom-modal-form-section">
         <form id="modal-add-to-cart-form">
-          <!-- Dynamic variant selectors will be injected here by JS -->
           <div id="modal-product-variants"></div>
           
-          <!-- Hidden input to store the final selected variant ID -->
           <input type="hidden" name="id" id="modal-variant-id" value="">
           
-          <button type="submit" id="modal-add-to-cart-btn" class="custom-banner-btn" style="width: 100%; margin-top: 20px;">
+          <button type="submit" id="modal-add-to-cart-btn" class="custom-banner-btn" style="width: 100%; margin-top: 15px;">
             <span class="btn-text">ADD TO CART</span>
             <span class="btn-arrow">→</span>
           </button>
-          
-          <p id="modal-cart-message" style="display:none; margin-top: 15px; font-weight: bold;"></p>
         </form>
       </div>
     </div>

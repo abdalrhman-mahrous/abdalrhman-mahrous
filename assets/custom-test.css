@@ -181,87 +181,93 @@
 .custom-modal-content {
   background: #fff;
   width: 90%;
-  max-width: 800px;
+  max-width: 420px; /* Made much narrower to match design */
   position: relative;
-  display: flex;
-  padding: 40px;
-  gap: 40px;
+  padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .custom-modal-close {
   position: absolute;
-  top: 15px;
+  top: 10px;
   right: 15px;
   background: none;
   border: none;
-  font-size: 28px;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.custom-modal-body {
-  display: flex;
-  width: 100%;
-  gap: 40px;
-}
-
-.custom-modal-image,
-.custom-modal-details {
-  flex: 1;
-}
-
-.custom-modal-image img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-.custom-modal-details h3 {
   font-size: 24px;
-  margin: 0 0 15px 0;
+  cursor: pointer;
 }
 
-#modal-product-price {
-  font-size: 20px;
-  font-weight: bold;
+.custom-modal-header-content {
+  display: flex;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
-#modal-product-description {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 25px;
-  line-height: 1.6;
+.custom-modal-header-content img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  background: #f4f4f4;
 }
 
+.custom-modal-text h3 {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+  font-weight: normal;
+}
+
+#modal-product-price {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#modal-product-description {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Variant Selectors */
 .variant-group {
   margin-bottom: 15px;
 }
-
 .variant-group label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 13px;
+  margin-bottom: 5px;
 }
 
-.variant-group select {
+/* Custom Color Block UI */
+.color-swatches {
+  display: flex;
+  border: 1px solid #000;
+  width: 100%;
+}
+.color-swatch {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+  border-right: 1px solid #000;
+}
+.color-swatch:last-child {
+  border-right: none;
+}
+.color-swatch.active {
+  background: #000;
+  color: #fff;
+} /* Black when selected */
+
+/* Size Select UI */
+.custom-variant-select {
   width: 100%;
   padding: 12px;
   border: 1px solid #000;
   background: #fff;
+  font-size: 14px;
   cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .custom-modal-body {
-    flex-direction: column;
-    gap: 20px;
-  }
-  .custom-modal-content {
-    padding: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
 }
