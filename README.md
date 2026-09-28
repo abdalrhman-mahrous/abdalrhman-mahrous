@@ -2,9 +2,9 @@
 
 ###
 
-<div data-importer="stats" align="center">
-  <img src="https://github-readme-stats.shion.dev/api?username=abdalrhman-mahrous&theme=tokyonight&hide_border=false&include_all_commits=true&count_private=true" height="150" alt="stats graph" />
-  <img src="https://github-readme-stats.shion.dev/api/top-langs/?username=abdalrhman-mahrous&theme=tokyonight&hide_border=false&layout=compact&card_width=320&langs_count=5" height="150" alt="languages graph" />
+<div align="center" data-importer="stats">
+  <img src="https://github-readme-stats.vercel.app/api?username=abdalrhman-mahrous&theme=tokyonight&show_icons=true&hide_border=false" height="170" alt="stats graph" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=abdalrhman-mahrous&theme=tokyonight&layout=compact&card_width=320&langs_count=5&hide_border=false" height="170" alt="languages graph" />
 </div>
 
 ###
